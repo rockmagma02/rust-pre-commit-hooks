@@ -1,0 +1,9 @@
+- id: rustfmt
+  name: rustfmt
+  entry: "rustfmt"
+  language: rust
+  types:
+    - text
+    - rust
+  exclude: "target"
+  description: "Format Rust code using rustfmt"
