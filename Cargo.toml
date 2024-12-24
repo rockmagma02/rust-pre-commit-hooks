@@ -14,6 +14,7 @@ publish = false
 readme = "README.md"
 repository = "https://github.com/rockmagma02/rust-pre-commit-hooks"
 resolver = "2"
+build = "src/build.rs"
 
 [[bin]]
 name = "rust-pre-commit-hooks"
