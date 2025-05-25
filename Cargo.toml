@@ -8,9 +8,7 @@ description = "Rust pre-commit hooks"
 homepage = "https://github.com/rockmagma02/rust-pre-commit-hooks"
 keywords = ["rust", "pre-commit", "hooks", "development-tools"]
 license = "MIT"
-# license-file = "LICENSE"
 publish = false
-# publish-lockfile = false
 readme = "README.md"
 repository = "https://github.com/rockmagma02/rust-pre-commit-hooks"
 resolver = "2"
@@ -19,3 +17,6 @@ build = "src/build.rs"
 [[bin]]
 name = "rust-pre-commit-hooks"
 path = "src/main.rs"
+
+[build-dependencies]
+which = "7.0.3"

@@ -8,37 +8,16 @@
   exclude: "target"
   description: "Format Rust code using rustfmt"
 
-- id: rustfmt-check
-  name: rustfmt check
-  entry: "rustfmt --check"
-  language: rust
-  types:
-    - text
-    - rust
-  exclude: "target"
-  description: "Check Rust code using rustfmt"
-
 - id: cargo-fmt
   name: cargo-fmt
-  entry: "cargo-fmt --all --"
+  entry: "cargo fmt"
   language: rust
   pass_filenames: false
   types:
     - text
     - rust
   exclude: "target"
-  description: "Formats all bin and lib files of the current crate using rustfmt."
-
-- id: cargo-fmt-check
-  name: cargo-fmt-check
-  entry: "cargo-fmt --check --all --"
-  language: rust
-  pass_filenames: false
-  types:
-    - text
-    - rust
-  exclude: "target"
-  description: "Check all bin and lib files of the current crate using rustfmt."
+  description: "Format Rust code using cargo fmt (same as rustfmt, but run on all crates)"
 
 - id: clippy
   name: clippy
@@ -50,13 +29,3 @@
     - rust
   exclude: "target"
   description: "Lint Rust code using clippy (run on all crates)"
-
-- id: clippy-driver
-  name: clippy-driver
-  entry: "clippy-driver"
-  language: rust
-  types:
-    - text
-    - rust
-  exclude: "target"
-  description: "Lint Rust code using clippy"

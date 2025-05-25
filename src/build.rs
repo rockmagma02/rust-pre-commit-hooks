@@ -1,47 +1,79 @@
 use std::process::Command;
+use which::which;
 
 fn main() {
-    let rustup_result = Command::new("rustup")
-        .args(["show"])
-        .output()
-        .expect("Failed to run rustup show");
-
-    if !rustup_result.status.success() {
-        panic!("Failed to run rustup show");
+    // Check if rustup is available
+    match which("rustup") {
+        Ok(_) => install_via_rustup(),
+        Err(_) => panic!("rustup is needed when using rustfmt and clippy"),
     }
 
-    let rustup_output = String::from_utf8_lossy(&rustup_result.stdout);
-    let toolchains = parse_toolchains(&rustup_output);
-
-
-    for toolchain in toolchains {
-        Command::new("rustup")
-            .args(["component", "add", "rustfmt", "--toolchain", &toolchain])
+    // Use rustup-init to initialize the toolchains (not always needed)
+    if which("rustup-init").is_ok() {
+        Command::new("rustup-init")
+            .args(["-y", "--quiet"])
             .status()
-            .expect("Failed to add rustfmt component");
-
-        println!("Added rustfmt component for toolchain: {}", toolchain);
-
-        Command::new("rustup")
-            .args(["component", "add", "clippy", "--toolchain", &toolchain])
-            .status()
-            .expect("Failed to add clippy component");
-
-        println!("Added clippy component for toolchain: {}", toolchain);
+            .expect("Failed to run rustup-init");
     }
-
-    Command::new("rustup-init")
-        .args(["-y", "--quiet"])
-        .status()
-        .expect("Failed to init rustup");
 }
 
+fn install_via_rustup() {
+    let rustup_output = Command::new("rustup").args(["show"]).output();
 
-fn parse_toolchains(rustup_output: &str) -> Vec<String> {
+    match rustup_output {
+        Ok(output) => {
+            let std_output = String::from_utf8_lossy(&output.stdout);
+            let parse_result = parse_installed_toolchains(&std_output);
+
+            match parse_result {
+                ParseResult::OnlyDefault => {
+                    Command::new("rustup")
+                        .args(["component", "add", "rustfmt"])
+                        .status()
+                        .expect("Failed to add rustfmt component");
+
+                    Command::new("rustup")
+                        .args(["component", "add", "clippy"])
+                        .status()
+                        .expect("Failed to add clippy component");
+
+                    println!("Added rustfmt and clippy components for default toolchain");
+                }
+                ParseResult::Multiple(toolchains) => {
+                    for toolchain in toolchains {
+                        Command::new("rustup")
+                            .args(["component", "add", "rustfmt", "--toolchain", &toolchain])
+                            .status()
+                            .expect("Failed to add rustfmt component");
+
+                        Command::new("rustup")
+                            .args(["component", "add", "clippy", "--toolchain", &toolchain])
+                            .status()
+                            .expect("Failed to add clippy component");
+
+                        println!(
+                            "Added rustfmt and clippy components for toolchain: {}",
+                            toolchain
+                        );
+                    }
+                }
+            }
+        }
+
+        Err(e) => panic!("Failed to run rustup show: {}", e),
+    }
+}
+
+enum ParseResult {
+    OnlyDefault,
+    Multiple(Vec<String>),
+}
+
+fn parse_installed_toolchains(std_output: &str) -> ParseResult {
     let mut toolchains = Vec::new();
     let mut in_toolchains_section = false;
 
-    for line in rustup_output.lines() {
+    for line in std_output.lines() {
         if line.contains("installed toolchains") {
             in_toolchains_section = true;
             continue;
@@ -61,5 +93,9 @@ fn parse_toolchains(rustup_output: &str) -> Vec<String> {
         }
     }
 
-    toolchains
+    if toolchains.is_empty() {
+        ParseResult::OnlyDefault
+    } else {
+        ParseResult::Multiple(toolchains)
+    }
 }

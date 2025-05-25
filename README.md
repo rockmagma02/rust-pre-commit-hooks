@@ -19,11 +19,12 @@
 
 <!-- markdownlint-disable ul-indent -->
 
+- [Table of Contents](#table-of-contents)
 - [Implementation](#implementation)
 - [Hooks](#hooks)
-    - [Code Formatting](#code-formatting)
-    - [Linting](#linting)
-    - [Example](#example)
+  - [Code Formatting](#code-formatting)
+  - [Linting](#linting)
+  - [Example](#example)
 - [Known Issues](#known-issues)
 - [License](#license)
 
@@ -49,16 +50,8 @@ The following pre-commit hooks are available:
   - ID: `rustfmt`
   - Runs on: `.rs` files
 
-- **rustfmt-check**: Checks if Rust files are properly formatted without modifying them
-  - ID: `rustfmt-check`
-  - Runs on: `.rs` files
-
 - **cargo-fmt**: Formats all bin and lib files in the current crate
   - ID: `cargo-fmt`
-  - Runs on entire project
-
-- **cargo-fmt-check**: Checks formatting of all bin and lib files without modifying them
-  - ID: `cargo-fmt-check`
   - Runs on entire project
 
 ### Linting
@@ -67,37 +60,28 @@ The following pre-commit hooks are available:
   - ID: `clippy`
   - Runs on entire project
 
-- **clippy-driver**: Runs Clippy lints on individual Rust files
-  - ID: `clippy-driver`
-  - Runs on: `.rs` files
-
 ### Example
 
 ```yaml
 # .pre-commit-config.yaml
 
   - repo: https://github.com/rockmagma02/rust-pre-commit-hooks
-    rev: v0.1.0
+    rev: v0.2.0
     hooks:
       - id: rustfmt
-      - id: rustfmt-check
       - id: cargo-fmt
-      - id: cargo-fmt-check
       - id: clippy
-      - id: clippy-driver
 ```
 
 ## Known Issues
 
 1. When modifying (install new) Rust toolchains, you may need to reinstall the pre-commit hooks to ensure the components (rustfmt and clippy) are properly installed for the new toolchain.
 
-```bash
-pre-commit uninstall
-pre-commit clean
-pre-commit install
-```
-
-2. the clippy-driver hook will compile all lib and bin files in the current crate. Will generate a set of binaries in the root of the project, which we strongly recommend not to use this hook.
+   ```bash
+   pre-commit uninstall
+   pre-commit clean
+   pre-commit install
+   ```
 
 ## License
 
